@@ -1,0 +1,26 @@
+# My Jupyter Notebooks
+notebook/
+
+# No idea what it is
+.idea
+
+# Mac system files
+.DS_store
+
+# node_modules folder
+node_modules
+
+# Environment variables
+.env
+
+# Virtual environments
+.venv
+
+# Ignore SASS config files
+.sass-cache
+
+# Ignore __pycache__ folders
+__pycache__/
+
+# Jupyter files
+.ipynb_checkpoints

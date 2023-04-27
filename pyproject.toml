@@ -1,0 +1,40 @@
+[tool.poetry]
+name = "crypto-bot"
+version = "0.1.0"
+description = ""
+authors = ["Pavlo Seimskyi <62653730+pavlo-seimskyi@users.noreply.github.com>"]
+readme = "README.md"
+packages = [{include = "crypto_bot"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pandas = "^2.0.0"
+numpy = "^1.24.2"
+pyarrow = "^11.0.0"
+python-binance = "^1.0.17"
+snscrape = "^0.6.2.20230320"
+scikit-learn = "^1.2.2"
+torch = "^2.0.0"
+matplotlib = "^3.7.1"
+seaborn = "^0.12.2"
+plotly = "^5.14.1"
+pytest = "^7.3.1"
+python-dotenv = "^1.0.0"
+talipp = "^1.9.1"
+ta = "^0.10.2"
+transformers = "^4.28.1"
+
+[tool.poetry.group.dev.dependencies]
+jupyter = "^1.0.0"
+jupyterlab = "^3.6.3"
+ipykernel = "^6.22.0"
+ipywidgets = "^8.0.6"
+black = "^23.3.0"
+isort = "^5.12.0"
+jupyterlab-code-formatter = "^1.6.1"
+jupyter-black = "^0.3.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
