@@ -22,6 +22,7 @@ python-dotenv = "^1.0.0"
 talipp = "^1.9.1"
 ta = "^0.10.2"
 transformers = "^4.28.1"
+boto3 = "^1.26.123"
 
 [tool.poetry.group.dev.dependencies]
 jupyter = "^1.0.0"
