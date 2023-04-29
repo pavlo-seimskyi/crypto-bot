@@ -4,7 +4,6 @@ version = "0.1.0"
 description = ""
 authors = ["Pavlo Seimskyi <62653730+pavlo-seimskyi@users.noreply.github.com>"]
 readme = "README.md"
-packages = [{include = "crypto_bot"}]
 
 [tool.poetry.dependencies]
 python = "^3.8"
