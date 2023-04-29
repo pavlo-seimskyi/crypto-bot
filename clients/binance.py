@@ -19,8 +19,8 @@ class BinanceClient:
         self,
         symbol: str,
         interval: str,
-        start_timestamp: int,
-        end_timestamp: int,
+        start: int,
+        end: int,
     ):
         """
         Get historical exchange rates for a currency pair from Binance.
@@ -44,6 +44,6 @@ class BinanceClient:
         return self.client.get_historical_klines(
             symbol=symbol,
             interval=interval,
-            start_str=start_timestamp,
-            end_str=end_timestamp,
+            start_str=start,
+            end_str=end,
         )
