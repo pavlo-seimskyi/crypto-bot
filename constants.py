@@ -7,3 +7,6 @@ BASE_PATH = str(pathlib.Path(__file__).parent)
 ASSET_TO_TRADE = "ETH"
 PREDICTOR_ASSETS = ["BTC", "LTC", "XRP", "ADA", "BNB", "XRP"]
 FIAT_TO_TRADE = "USDT"
+
+# AWS
+S3_BUCKET_NAME = "crypto-bot-dc777"
