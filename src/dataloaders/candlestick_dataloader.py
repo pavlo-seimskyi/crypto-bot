@@ -7,7 +7,7 @@ from binance import enums
 
 from clients import ENV
 from clients.binance import BinanceClient
-from src.dataloaders.abstract import DataLoader
+from src.dataloaders.abstract_dataloader import DataLoader
 
 
 @dataclass
@@ -156,7 +156,7 @@ class CandleStickDataLoader(DataLoader):
         return data.fillna(method="ffill")
 
     def extract_time(self, data: pd.DataFrame) -> pd.DataFrame:
-        time = pd.to_datetime(data["open_timestamp"].apply(self.timestamp_to_date))
+        time = pd.to_datetime(data["open_timestamp"].apply(self.timestamp_to_str))
         data.insert(loc=0, column="time", value=time)
         return data
 

@@ -1,4 +1,3 @@
-from src.dataloaders.abstract import DataLoader
-from src.dataloaders.candlestick import CandleStickDataLoader
+from src.dataloaders.candlestick_dataloader import CandleStickDataLoader
 
-__all__ = ["CandleStickDataLoader", "DataLoader"]
+__all__ = ["CandleStickDataLoader"]
