@@ -11,7 +11,6 @@ class DataLoader(ABC):
     """Abstract class for DataLoaders."""
 
     datetime_fmt: Optional[str] = field(default="%Y-%m-%d %H:%M:%S", init=False)
-    # datetime_fmt: Optional[str] = "%Y-%m-%d %H:%M:%S"
 
     @abstractmethod
     def load_data():
