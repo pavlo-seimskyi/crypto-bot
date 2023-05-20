@@ -17,6 +17,8 @@ class MediaStackNewsScraper(DataLoader):
 
     def __post_init__(self):
         self.connection = http.client.HTTPConnection("api.mediastack.com")
+        # Daily granularity of data loading
+        self.datetime_fmt = "%Y-%m-%d"
         self.validate()
 
     def load_data(self, start: int, end: int) -> pd.DataFrame:
@@ -45,7 +47,7 @@ class MediaStackNewsScraper(DataLoader):
             end=self.timestamp_to_str(end),
             freq="D",
         )
-        return [d.strftime("%Y-%m-%d") for d in dates]
+        return [d.strftime(self.datetime_fmt) for d in dates]
 
     def get_data_for_date(self, date: str) -> List[dict]:
         """
