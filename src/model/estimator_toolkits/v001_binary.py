@@ -1,25 +1,48 @@
 import numpy as np
 import torch
 
-from src.estimators.base import BaseEstimator
-from src.estimators.datasets.sliding_window import SlidingWindowDataset
+from src.model.estimator_toolkits.base import BaseEstimator
 
 
 class BinaryEstimator(BaseEstimator):
     def __init__(
         self,
         model: torch.nn.Module,
-        batch_size: int = 512,
-        loss_fn: torch.nn.Module = torch.nn.BCELoss(),
-        weight_decay: float = 1e-4,
+        batch_size: int,
+        loss_fn: torch.nn.Module,
+        dataset_builder: torch.utils.data.Dataset,
         lr: float = 1e-4,
-        lr_decay_step: int = 10,
-        lr_decay_multiplier: float = 0.5,
+        weight_decay: float = 1e-4,
+        lr_decay_step: int = None,
+        lr_decay_multiplier: float = None,
     ):
+        """
+        Binary classification estimator toolkit.
+
+        Parameters
+        ----------
+        model : torch.nn.Module
+            PyTorch model.
+        batch_size : int, optional
+            Batch size, by default 512.
+        loss_fn : torch.nn.Module, optional
+            Loss function, by default torch.nn.BCELoss()
+        dataset_builder : torch.utils.data.Dataset
+            Dataset builder, one of `src.model.datasets`.
+        lr : float, optional
+            Learning rate, by default 1e-4.
+        weight_decay : float, optional
+            Weight decay, by default 1e-4.
+        lr_decay_step : int, optional
+            Learning rate decay step, by default 10.
+        lr_decay_multiplier : float, optional
+            Learning rate will multiply by this number every `lr_decay_step`-th epoch.
+        """
         self.default_model = model
         self.model = model
         self.batch_size = batch_size
         self.loss_fn = loss_fn
+        self.dataset_builder = dataset_builder
         self.device = torch.device(
             "cuda" if torch.cuda.is_available() else "cpu"
         )
@@ -101,7 +124,7 @@ class BinaryEstimator(BaseEstimator):
         return y_pred
 
     def build_dataloader(self, x: torch.Tensor, y: torch.Tensor = None):
-        dataset = SlidingWindowDataset(x, y)
+        dataset = self.dataset_builder(x, y)
         return torch.utils.data.DataLoader(
             dataset, batch_size=self.batch_size, shuffle=False
         )

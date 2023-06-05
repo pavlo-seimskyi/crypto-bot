@@ -1,3 +1,3 @@
-from src.estimators.toolkits.v001_binary import BinaryEstimator
+from src.model.estimator_toolkits.v001_binary import BinaryEstimator
 
 __all__ = ["BinaryEstimator"]

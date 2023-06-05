@@ -33,14 +33,11 @@ class SlidingWindowDataset(torch.utils.data.Dataset):
         self.x = self.apply_sliding_window_to_x(x)
         self.y_available = y is not None
         if self.y_available:
-            assert x.size(0) == y.size(0), "X and y must have equal shape."
             self.y_position = (
                 y_position if y_position is not None else seq_len - 1
             )
-            assert (
-                self.y_position < self.seq_len
-            ), f"Y position must be between 0 and sequence length - 1."
             self.y = self.get_y_per_window(y)
+            self.validate_y()
 
     def __len__(self):
         return self.x.size(0)
@@ -60,3 +57,11 @@ class SlidingWindowDataset(torch.utils.data.Dataset):
         start = self.y_position
         end = -self.seq_len + start + 1 if start + 1 != self.seq_len else None
         return y[start:end]
+
+    def validate_y(self):
+        assert self.x.size(0) == self.y.size(
+            0
+        ), "X and y must have equal shape."
+        assert (
+            self.y_position < self.seq_len
+        ), f"Y position must be between 0 and sequence length - 1."
