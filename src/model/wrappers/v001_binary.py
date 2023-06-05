@@ -1,10 +1,10 @@
 import numpy as np
 import torch
 
-from src.model.estimator_toolkits.base import BaseEstimator
+from src.model.wrappers.base import ModelWrapper
 
 
-class BinaryEstimator(BaseEstimator):
+class BinaryModelWrapper(ModelWrapper):
     def __init__(
         self,
         model: torch.nn.Module,
@@ -52,8 +52,8 @@ class BinaryEstimator(BaseEstimator):
         self.lr_decay_step = lr_decay_step
         self.lr_decay_multiplier = lr_decay_multiplier
 
-        self.optimizer = self.set_optimizer()
-        self.scheduler = self.set_scheduler()
+        self.set_optimizer()
+        self.set_scheduler()
 
     def reset_model(self):
         self.model = self.default_model

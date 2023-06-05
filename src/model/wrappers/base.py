@@ -3,9 +3,9 @@ from abc import ABC, abstractmethod
 from torch import Tensor
 
 
-class BaseEstimator(ABC):
+class ModelWrapper(ABC):
     """
-    Abstract class for estimator toolkits.
+    Abstract class for model wrappers.
 
     This class is an abstraction layer to train and predict
     with model architectures from `src.model.architectures`
