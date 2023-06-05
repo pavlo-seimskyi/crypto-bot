@@ -1,8 +1,10 @@
 import os
-import boto3
-from clients import ENV
-import constants
 from typing import BinaryIO
+
+import boto3
+
+import constants
+from clients import ENV
 
 
 def upload(
@@ -70,7 +72,7 @@ def download(
     """
     Download a file from an S3 bucket to byte stream in memory. The downloaded file
         has to be deserialized (examples below).
-        
+
     Parameters
     ----------
     s3_path: str

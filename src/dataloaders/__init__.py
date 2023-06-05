@@ -1,3 +1,3 @@
-from src.dataloaders.candlestick_dataloader import CandleStickDataLoader
+from src.dataloaders.binance import BinanceDataLoader
 
-__all__ = ["CandleStickDataLoader"]
+__all__ = ["BinanceDataLoader"]
