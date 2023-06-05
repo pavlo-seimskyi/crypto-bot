@@ -17,7 +17,7 @@ class BinaryModelWrapper(ModelWrapper):
         lr_decay_multiplier: float = None,
     ):
         """
-        Binary classification estimator toolkit.
+        Model wrapper for binary classification.
 
         Parameters
         ----------

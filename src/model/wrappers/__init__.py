@@ -1,3 +1,3 @@
-from src.model.wrappers.v001_binary import BinaryModelWrapper
+from src.model.wrappers.binary_classification import BinaryModelWrapper
 
 __all__ = ["BinaryModelWrapper"]
