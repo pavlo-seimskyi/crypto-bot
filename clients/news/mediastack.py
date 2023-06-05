@@ -6,7 +6,7 @@ from typing import List
 from clients.news.abstract import NewsClient
 
 
-class MediaStackClient(NewsClient):
+class MediaStackNewsClient(NewsClient):
     def __init__(self, access_key: str):
         self.access_key = access_key
         self.connection = http.client.HTTPConnection("api.mediastack.com")

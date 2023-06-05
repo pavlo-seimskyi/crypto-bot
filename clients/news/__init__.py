@@ -1,3 +1,3 @@
-from clients.news.mediastack import MediaStackClient
+from clients.news.mediastack import MediaStackNewsClient
 
-__all__ = ["MediaStackClient"]
+__all__ = ["MediaStackNewsClient"]
