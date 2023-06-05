@@ -12,7 +12,7 @@ class MediaStackNewsClient(NewsClient):
         self.connection = http.client.HTTPConnection("api.mediastack.com")
 
     def get_data(
-        self, 
+        self,
         date: str,
         keywords: List[str],
         limit: int,

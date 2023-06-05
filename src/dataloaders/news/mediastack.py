@@ -40,7 +40,7 @@ class MediaStackNewsScraper(DataLoader):
         data = []
         for date in self.get_dates(start, end):
             data_for_date = self.news_client.get_data(
-                date=date, 
+                date=date,
                 keywords=self.keywords,
                 limit=self.limit,
                 language=self.language,
