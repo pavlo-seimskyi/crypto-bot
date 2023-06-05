@@ -2,20 +2,19 @@ import pandas as pd
 import pytest
 from binance import enums
 
-from src.dataloaders.candlestick_dataloader import CandleStickDataLoader
+from clients import BinanceClient
+from src.dataloaders import BinanceDataLoader
 
 
 @pytest.fixture
-def candlestick_dataloader():
-    dl = CandleStickDataLoader(
+def binance_dataloader():
+    return BinanceDataLoader(
         interval=enums.KLINE_INTERVAL_1MINUTE,
         assets=["BTC", "ETH"],
         fiat="USDT",
-        api_key=None,
-        api_secret=None,
+        exchange_client=BinanceClient(api_key=None, api_secret=None),
+        datetime_fmt="%Y-%m-%d %H:%M:%S",
     )
-    dl.datetime_fmt = "%Y-%m-%d %H:%M:%S"
-    return dl
 
 
 @pytest.fixture
@@ -53,22 +52,22 @@ def raw_input_data():
 
 
 @pytest.mark.unit
-def test_read_raw_input_data(candlestick_dataloader, raw_input_data):
-    data = candlestick_dataloader.read_raw_input_data(raw_input_data)
+def test_read_raw_input_data(binance_dataloader, raw_input_data):
+    data = binance_dataloader.read_raw_input_data(raw_input_data)
     assert type(data) == pd.DataFrame
     assert not data.empty
     assert data.shape == (2, 11)
 
 
 @pytest.mark.unit
-def test_pivot_price_data(candlestick_dataloader, monkeypatch):
+def test_pivot_price_data(binance_dataloader, monkeypatch):
     # Patch dtypes
     dtypes = {
         "open_timestamp": int,
         "open": float,
         "close": float,
     }
-    monkeypatch.setattr(candlestick_dataloader, "dtypes", dtypes)
+    monkeypatch.setattr(binance_dataloader.exchange_client, "dtypes", dtypes)
     input_dict = {
         "open_timestamp": [1614729660000, 1614729720000],
         "open": [48306.8, 48341.14],
@@ -76,7 +75,7 @@ def test_pivot_price_data(candlestick_dataloader, monkeypatch):
         "symbol": ["BTC", "BTC"],
     }
     input_data = pd.DataFrame(input_dict)
-    output = candlestick_dataloader.pivot_price_data(input_data)
+    output = binance_dataloader.pivot_price_data(input_data)
     # Symbol column is removed after pivot
     _ = input_dict.pop("symbol")
     assert output.T.values.tolist() == list(input_dict.values())
@@ -84,7 +83,7 @@ def test_pivot_price_data(candlestick_dataloader, monkeypatch):
 
 
 @pytest.mark.unit
-def test_process_missing_intervals(candlestick_dataloader):
+def test_process_missing_intervals(binance_dataloader):
     input_data = pd.DataFrame(
         {
             "open_timestamp": [1614729660000, 1614729840000],
@@ -93,7 +92,7 @@ def test_process_missing_intervals(candlestick_dataloader):
         }
     )
 
-    output = candlestick_dataloader.process_missing_intervals(input_data)
+    output = binance_dataloader.process_missing_intervals(input_data)
 
     expected_output = pd.DataFrame(
         {
@@ -119,14 +118,14 @@ def test_process_missing_intervals(candlestick_dataloader):
 
 
 @pytest.mark.unit
-def test_validate_invalid_symbols(candlestick_dataloader, monkeypatch):
+def test_validate_invalid_symbols(binance_dataloader, monkeypatch):
     with pytest.raises(AssertionError):
-        monkeypatch.setattr(candlestick_dataloader, "assets", [])
-        candlestick_dataloader.validate()
+        monkeypatch.setattr(binance_dataloader, "assets", [])
+        binance_dataloader.validate()
 
 
 @pytest.mark.unit
-def test_validate_invalid_interval(candlestick_dataloader, monkeypatch):
+def test_validate_invalid_interval(binance_dataloader, monkeypatch):
     with pytest.raises(AssertionError):
-        monkeypatch.setattr(candlestick_dataloader, "interval", "1-minutito")
-        candlestick_dataloader.validate()
+        monkeypatch.setattr(binance_dataloader, "interval", "1-minutito")
+        binance_dataloader.validate()

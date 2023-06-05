@@ -1,55 +1,26 @@
-from dataclasses import dataclass
 from typing import List
 
 import numpy as np
 import pandas as pd
-from binance import enums
 
-from clients import ENV
-from clients.binance import BinanceClient
-from src.dataloaders.abstract_dataloader import DataLoader
+from clients.exchange.abstract import ExchangeClient
+from src.dataloaders.abstract import DataLoader
 
 
-@dataclass
-class CandleStickDataLoader(DataLoader):
-    interval: str
-    assets: List[str]
-    fiat: str
-    api_key: str = ENV["BINANCE_API_KEY"]
-    api_secret: str = ENV["BINANCE_API_SECRET"]
-
-    def __post_init__(self):
-        self.client = BinanceClient(self.api_key, self.api_secret)
-        self.dtypes = {
-            "open_timestamp": int,
-            "open": float,
-            "high": float,
-            "low": float,
-            "close": float,
-            "volume": float,
-            "close_timestamp": int,
-            "quote_asset_volume": float,
-            "number_of_trades": int,
-            "taker_buy_base_asset_volume": float,
-            "taker_buy_quote_asset_volume": float,
-        }
-        self.interval_mapping = {
-            enums.KLINE_INTERVAL_1MINUTE: "1T",
-            enums.KLINE_INTERVAL_3MINUTE: "3T",
-            enums.KLINE_INTERVAL_5MINUTE: "5T",
-            enums.KLINE_INTERVAL_15MINUTE: "15T",
-            enums.KLINE_INTERVAL_30MINUTE: "30T",
-            enums.KLINE_INTERVAL_1HOUR: "1H",
-            enums.KLINE_INTERVAL_2HOUR: "2H",
-            enums.KLINE_INTERVAL_4HOUR: "4H",
-            enums.KLINE_INTERVAL_6HOUR: "6H",
-            enums.KLINE_INTERVAL_8HOUR: "8H",
-            enums.KLINE_INTERVAL_12HOUR: "12H",
-            enums.KLINE_INTERVAL_1DAY: "1d",
-            enums.KLINE_INTERVAL_3DAY: "3d",
-            enums.KLINE_INTERVAL_1WEEK: "1w",
-            enums.KLINE_INTERVAL_1MONTH: "1M",
-        }
+class BinanceDataLoader(DataLoader):
+    def __init__(
+        self,
+        interval: str,
+        assets: List[str],
+        fiat: str,
+        exchange_client: ExchangeClient,
+        **kwargs,
+    ):
+        super().__init__(**kwargs)
+        self.interval = interval
+        self.assets = assets
+        self.fiat = fiat
+        self.exchange_client = exchange_client
         self.validate()
 
     def load_data(self, start: int, end: int) -> pd.DataFrame:
@@ -69,7 +40,7 @@ class CandleStickDataLoader(DataLoader):
         data = pd.DataFrame()
         end -= 1  # `<` instead of `<=`
         for symbol in self.symbols:
-            input_data = self.client.get_historic_prices(
+            input_data = self.exchange_client.get_historic_prices(
                 symbol=symbol,
                 interval=self.interval,
                 start=start,
@@ -108,8 +79,8 @@ class CandleStickDataLoader(DataLoader):
         """
         # Drop the last `Ignore` column
         input_data = np.array(input_data)[:, :-1]
-        data = pd.DataFrame(input_data, columns=self.dtypes.keys())
-        data = data.astype(self.dtypes)
+        data = pd.DataFrame(input_data, columns=self.exchange_client.dtypes.keys())
+        data = data.astype(self.exchange_client.dtypes)
         return data
 
     def pivot_price_data(self, data: pd.DataFrame) -> pd.DataFrame:
@@ -133,7 +104,7 @@ class CandleStickDataLoader(DataLoader):
         """
         cols = [
             col
-            for col in self.dtypes.keys()
+            for col in self.exchange_client.dtypes.keys()
             if col not in ("open_timestamp", "close_timestamp")
         ]
         return pd.concat(
@@ -166,7 +137,7 @@ class CandleStickDataLoader(DataLoader):
                 "time": pd.date_range(
                     start=data["time"].min(),
                     end=data["time"].max(),
-                    freq=self.interval_mapping[self.interval],
+                    freq=self.exchange_client.interval_mapping[self.interval],
                 )
             }
         )
@@ -174,6 +145,6 @@ class CandleStickDataLoader(DataLoader):
 
     def validate(self):
         assert (
-            self.interval in self.interval_mapping.keys()
+            self.interval in self.exchange_client.interval_mapping.keys()
         ), f"Invalid interval '{self.interval}'."
         assert len(self.symbols) > 0, "No symbols to get data for."

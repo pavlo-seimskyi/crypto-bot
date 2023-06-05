@@ -1,19 +1,21 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional
 
 import pytz
 
 
-@dataclass
 class DataLoader(ABC):
     """Abstract class for DataLoaders."""
 
-    datetime_fmt: Optional[str] = field(default="%Y-%m-%d %H:%M:%S", init=False)
+    def __init__(
+        self,
+        datetime_fmt: Optional[str] = "%Y-%m-%d %H:%M:%S",
+    ):
+        self.datetime_fmt = datetime_fmt
 
     @abstractmethod
-    def load_data():
+    def load_data(self, **kwargs):
         raise NotImplementedError()
 
     def str_to_datetime(self, date: str) -> datetime:
