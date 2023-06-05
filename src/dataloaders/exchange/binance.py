@@ -79,7 +79,9 @@ class BinanceDataLoader(DataLoader):
         """
         # Drop the last `Ignore` column
         input_data = np.array(input_data)[:, :-1]
-        data = pd.DataFrame(input_data, columns=self.exchange_client.dtypes.keys())
+        data = pd.DataFrame(
+            input_data, columns=self.exchange_client.dtypes.keys()
+        )
         data = data.astype(self.exchange_client.dtypes)
         return data
 
@@ -127,7 +129,9 @@ class BinanceDataLoader(DataLoader):
         return data.fillna(method="ffill")
 
     def extract_time(self, data: pd.DataFrame) -> pd.DataFrame:
-        time = pd.to_datetime(data["open_timestamp"].apply(self.timestamp_to_str))
+        time = pd.to_datetime(
+            data["open_timestamp"].apply(self.timestamp_to_str)
+        )
         data.insert(loc=0, column="time", value=time)
         return data
 

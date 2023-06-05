@@ -369,22 +369,17 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "dateparser"
-version = "1.1.8"
+version = "0.7.6"
 description = "Date parsing library designed to parse dates from HTML pages"
 category = "main"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [package.dependencies]
 python-dateutil = "*"
 pytz = "*"
-regex = "<2019.02.19 || >2019.02.19,<2021.8.27 || >2021.8.27"
+regex = "!=2019.02.19"
 tzlocal = "*"
-
-[package.extras]
-calendars = ["convertdate", "hijri-converter"]
-fasttext = ["fasttext"]
-langdetect = ["langdetect"]
 
 [[package]]
 name = "debugpy"
@@ -442,6 +437,17 @@ python-versions = "*"
 
 [package.extras]
 devel = ["colorama", "json-spec", "jsonschema", "pylint", "pytest", "pytest-benchmark", "pytest-cache", "validictory"]
+
+[[package]]
+name = "feedparser"
+version = "6.0.10"
+description = "Universal feed parser, handles RSS 0.9x, RSS 1.0, RSS 2.0, CDF, Atom 0.3, and Atom 1.0 feeds"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+sgmllib3k = "*"
 
 [[package]]
 name = "filelock"
@@ -1746,6 +1752,27 @@ python-versions = ">=3.7"
 plugins = ["importlib-metadata"]
 
 [[package]]
+name = "pygooglenews"
+version = "0.1.2"
+description = "If Google News had a Python library"
+category = "main"
+optional = false
+python-versions = "^3.6"
+develop = false
+
+[package.dependencies]
+beautifulsoup4 = "^4.9.1"
+dateparser = "^0.7.6"
+feedparser = "^6.0.10"
+requests = "^2.24.0"
+
+[package.source]
+type = "git"
+url = "https://github.com/pavlo-seimskyi/pygooglenews.git"
+reference = "HEAD"
+resolved_reference = "023ac9cac8931ae4ed4e62e6672f919c76de280b"
+
+[[package]]
 name = "pyparsing"
 version = "3.0.9"
 description = "pyparsing module - Classes and methods to define and execute parsing grammars"
@@ -2087,6 +2114,14 @@ typing-extensions = "*"
 [package.extras]
 test = ["pytest (>=6.2)", "virtualenv (>20)"]
 toml = ["setuptools (>=42)"]
+
+[[package]]
+name = "sgmllib3k"
+version = "1.0.0"
+description = "Py3k port of sgmllib."
+category = "main"
+optional = false
+python-versions = "*"
 
 [[package]]
 name = "six"
@@ -2586,7 +2621,7 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "4dc4f74b11c6cfd41bc468e577c65ce6066673580649f7f35fbed205d1921653"
+content-hash = "d52183e907b4f8e88f8c491e7cb430570e5205a66c4b3e80fa500f253c35c615"
 
 [metadata.files]
 aiofiles = [
@@ -3050,8 +3085,8 @@ cycler = [
     {file = "cycler-0.11.0.tar.gz", hash = "sha256:9c87405839a19696e837b3b818fed3f5f69f16f1eec1a1ad77e043dcea9c772f"},
 ]
 dateparser = [
-    {file = "dateparser-1.1.8-py2.py3-none-any.whl", hash = "sha256:070b29b5bbf4b1ec2cd51c96ea040dc68a614de703910a91ad1abba18f9f379f"},
-    {file = "dateparser-1.1.8.tar.gz", hash = "sha256:86b8b7517efcc558f085a142cdb7620f0921543fcabdb538c8a4c4001d8178e3"},
+    {file = "dateparser-0.7.6-py2.py3-none-any.whl", hash = "sha256:7552c994f893b5cb8fcf103b4cd2ff7f57aab9bfd2619fdf0cf571c0740fd90b"},
+    {file = "dateparser-0.7.6.tar.gz", hash = "sha256:e875efd8c57c85c2d02b238239878db59ff1971f5a823457fcc69e493bf6ebfa"},
 ]
 debugpy = [
     {file = "debugpy-1.6.7-cp310-cp310-macosx_11_0_x86_64.whl", hash = "sha256:b3e7ac809b991006ad7f857f016fa92014445085711ef111fdc3f74f66144096"},
@@ -3092,6 +3127,10 @@ executing = [
 fastjsonschema = [
     {file = "fastjsonschema-2.16.3-py3-none-any.whl", hash = "sha256:04fbecc94300436f628517b05741b7ea009506ce8f946d40996567c669318490"},
     {file = "fastjsonschema-2.16.3.tar.gz", hash = "sha256:4a30d6315a68c253cfa8f963b9697246315aa3db89f98b97235e345dedfb0b8e"},
+]
+feedparser = [
+    {file = "feedparser-6.0.10-py3-none-any.whl", hash = "sha256:79c257d526d13b944e965f6095700587f27388e50ea16fd245babe4dfae7024f"},
+    {file = "feedparser-6.0.10.tar.gz", hash = "sha256:27da485f4637ce7163cdeab13a80312b93b7d0c1b775bef4a47629a3110bca51"},
 ]
 filelock = [
     {file = "filelock-3.12.0-py3-none-any.whl", hash = "sha256:ad98852315c2ab702aeb628412cbf7e95b7ce8c3bf9565670b4eaecf1db370a9"},
@@ -4005,6 +4044,7 @@ pygments = [
     {file = "Pygments-2.15.1-py3-none-any.whl", hash = "sha256:db2db3deb4b4179f399a09054b023b6a586b76499d36965813c71aa8ed7b5fd1"},
     {file = "Pygments-2.15.1.tar.gz", hash = "sha256:8ace4d3c1dd481894b2005f560ead0f9f19ee64fe983366be1a21e171d12775c"},
 ]
+pygooglenews = []
 pyparsing = [
     {file = "pyparsing-3.0.9-py3-none-any.whl", hash = "sha256:5026bae9a10eeaefb61dab2f09052b9f4307d44aee4eda64b309723d8d206bbc"},
     {file = "pyparsing-3.0.9.tar.gz", hash = "sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb"},
@@ -4363,6 +4403,9 @@ setuptools = [
 setuptools-scm = [
     {file = "setuptools_scm-7.1.0-py3-none-any.whl", hash = "sha256:73988b6d848709e2af142aa48c986ea29592bbcfca5375678064708205253d8e"},
     {file = "setuptools_scm-7.1.0.tar.gz", hash = "sha256:6c508345a771aad7d56ebff0e70628bf2b0ec7573762be9960214730de278f27"},
+]
+sgmllib3k = [
+    {file = "sgmllib3k-1.0.0.tar.gz", hash = "sha256:7868fb1c8bfa764c1ac563d3cf369c381d1325d36124933a726f29fcdaa812e9"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},

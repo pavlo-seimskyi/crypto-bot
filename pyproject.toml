@@ -23,6 +23,7 @@ talipp = "^1.9.1"
 ta = "^0.10.2"
 transformers = "^4.28.1"
 boto3 = "^1.26.123"
+pygooglenews = {git = "https://github.com/pavlo-seimskyi/pygooglenews.git"}
 
 [tool.poetry.group.dev.dependencies]
 jupyter = "^1.0.0"
@@ -39,7 +40,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.black]
-line-length = 88
+line-length = 79
 include = '\.pyi?$'
 exclude = '''
 (

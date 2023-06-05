@@ -103,13 +103,17 @@ def download(
     _validate_env(env)
     session = _get_session()
     s3 = session.client("s3")
-    response = s3.get_object(Bucket=bucket_name, Key=os.path.join(env, s3_path))
+    response = s3.get_object(
+        Bucket=bucket_name, Key=os.path.join(env, s3_path)
+    )
     return response["Body"].read()
 
 
 def _validate_env(env: str) -> None:
     if env not in ("prod", "dev"):
-        raise ValueError(f"Invalid env variable '{env}'. Expected 'prod' or 'dev'.")
+        raise ValueError(
+            f"Invalid env variable '{env}'. Expected 'prod' or 'dev'."
+        )
 
 
 def _get_session():

@@ -2,8 +2,8 @@ import pandas as pd
 import pytest
 from binance import enums
 
-from clients import BinanceClient
-from src.dataloaders import BinanceDataLoader
+from clients.exchange import BinanceClient
+from src.dataloaders.exchange import BinanceDataLoader
 
 
 @pytest.fixture
@@ -79,7 +79,11 @@ def test_pivot_price_data(binance_dataloader, monkeypatch):
     # Symbol column is removed after pivot
     _ = input_dict.pop("symbol")
     assert output.T.values.tolist() == list(input_dict.values())
-    assert output.columns.tolist() == ["open_timestamp", "BTC_open", "BTC_close"]
+    assert output.columns.tolist() == [
+        "open_timestamp",
+        "BTC_open",
+        "BTC_close",
+    ]
 
 
 @pytest.mark.unit
