@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 
-from src.model.wrappers.base import ModelWrapper
+from src.model.wrappers.abstract import ModelWrapper
 
 
 class BinaryModelWrapper(ModelWrapper):
