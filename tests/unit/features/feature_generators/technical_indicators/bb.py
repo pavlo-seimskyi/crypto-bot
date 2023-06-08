@@ -1,8 +1,9 @@
-import pytest
-import pandas as pd
 import numpy as np
-from src.features.feature_generators.technical_indicators import BB
+import pandas as pd
+import pytest
 from talipp.indicators import BB as BB_talipp
+
+from src.features.feature_generators.technical_indicators import BB
 
 
 @pytest.fixture
@@ -23,9 +24,11 @@ def test_initialize(sample_data, bb_instance):
 def test_output_values(sample_data, bb_instance):
     bb_instance.initialize(sample_data)
 
-    expected_output_values = {'lower': [np.nan, 0.5, 0.5, 0.5, 1.0],
- 'middle': [np.nan, 1.5, 1.5, 1.5, 3.0],
- 'upper': [np.nan, 2.5, 2.5, 2.5, 5.0]}
+    expected_output_values = {
+        "lower": [np.nan, 0.5, 0.5, 0.5, 1.0],
+        "middle": [np.nan, 1.5, 1.5, 1.5, 3.0],
+        "upper": [np.nan, 2.5, 2.5, 2.5, 5.0],
+    }
 
     assert bb_instance.output_values == expected_output_values
 
@@ -33,12 +36,14 @@ def test_output_values(sample_data, bb_instance):
 def test_add_value(sample_data, bb_instance):
     bb_instance.initialize(sample_data)
 
-    new_value = pd.Series({'price': 4.})
+    new_value = pd.Series({"price": 4.0})
     bb_instance.add_value(new_value)
 
-    expected_output_values = {'lower': [np.nan, 0.5, 0.5, 0.5, 1.0, 4.0],
- 'middle': [np.nan, 1.5, 1.5, 1.5, 3.0, 4.0],
- 'upper': [np.nan, 2.5, 2.5, 2.5, 5.0, 4.0]}
+    expected_output_values = {
+        "lower": [np.nan, 0.5, 0.5, 0.5, 1.0, 4.0],
+        "middle": [np.nan, 1.5, 1.5, 1.5, 3.0, 4.0],
+        "upper": [np.nan, 2.5, 2.5, 2.5, 5.0, 4.0],
+    }
 
     assert bb_instance.output_values == expected_output_values
 

@@ -1,8 +1,9 @@
-import pytest
-import pandas as pd
 import numpy as np
-from src.features.feature_generators.technical_indicators import RSI
+import pandas as pd
+import pytest
 from talipp.indicators import RSI as RSI_talipp
+
+from src.features.feature_generators.technical_indicators import RSI
 
 
 @pytest.fixture

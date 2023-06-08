@@ -1,7 +1,9 @@
+from datetime import datetime
+from unittest.mock import patch
+
 import pandas as pd
 import pytest
-from unittest.mock import patch
-from datetime import datetime
+
 from src.features.feature_generators.datetime import DateTime
 
 

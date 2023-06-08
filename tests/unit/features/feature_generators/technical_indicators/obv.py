@@ -1,8 +1,9 @@
-import pytest
-import pandas as pd
 import numpy as np
-from src.features.feature_generators.technical_indicators import OBV
+import pandas as pd
+import pytest
 from talipp.indicators import OBV as OBV_talipp
+
+from src.features.feature_generators.technical_indicators import OBV
 
 
 @pytest.fixture
@@ -47,11 +48,11 @@ def test_add_value(sample_data, obv_instance):
 
     new_value = pd.Series(
         {
-            'open': 4.,
-            "close": 7.,
-            "high": 7.,
-            "low": 4.,
-            "volume": 20.,
+            "open": 4.0,
+            "close": 7.0,
+            "high": 7.0,
+            "low": 4.0,
+            "volume": 20.0,
         }
     )
     obv_instance.add_value(new_value)

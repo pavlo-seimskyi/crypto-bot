@@ -1,4 +1,5 @@
 from typing import Any, List
+
 import numpy as np
 from talipp.indicators import MACD as MACD_talipp
 

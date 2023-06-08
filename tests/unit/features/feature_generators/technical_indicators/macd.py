@@ -1,18 +1,21 @@
-import pytest
-import pandas as pd
 import numpy as np
-from src.features.feature_generators.technical_indicators import MACD
+import pandas as pd
+import pytest
 from talipp.indicators import MACD as MACD_talipp
+
+from src.features.feature_generators.technical_indicators import MACD
 
 
 @pytest.fixture
 def sample_data():
-    return pd.DataFrame({'price': [1.,3.,2.,3.,5.,4.,3.,1.]})
+    return pd.DataFrame({"price": [1.0, 3.0, 2.0, 3.0, 5.0, 4.0, 3.0, 1.0]})
 
 
 @pytest.fixture
 def macd_instance():
-    return MACD(input_col="price", fast_period=2, slow_period=5, signal_period=4)
+    return MACD(
+        input_col="price", fast_period=2, slow_period=5, signal_period=4
+    )
 
 
 def test_initialize(sample_data, macd_instance):

@@ -1,16 +1,20 @@
 from abc import ABC, abstractmethod, abstractproperty
-from typing import Any, Dict
+from typing import Any, Dict, List, Union
+
+from pandas import DataFrame, Series
 
 
 class FeatureGenerator(ABC):
     """Abstract class for feature generators."""
 
     @abstractmethod
-    def initialize(self):
+    def initialize(self, data: Union[DataFrame, Dict[str, List[Any]]]) -> None:
+        """Initialize the generator and its output values."""
         raise NotImplementedError()
 
     @abstractmethod
-    def add_value(self):
+    def add_value(self, data: Union[Series, Dict[str, Any]]) -> None:
+        """Add a new value to the feature generator."""
         raise NotImplementedError()
 
     @abstractproperty
@@ -18,5 +22,5 @@ class FeatureGenerator(ABC):
         raise NotImplementedError()
 
     @abstractproperty
-    def name(self):
+    def name(self) -> str:
         raise NotImplementedError()
