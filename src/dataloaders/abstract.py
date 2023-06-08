@@ -25,11 +25,13 @@ class DataLoader(ABC):
     def datetime_to_str(self, dt: datetime) -> str:
         return dt.strftime(self.datetime_fmt)
 
-    def timestamp_to_datetime(self, timestamp: int) -> datetime:
+    @staticmethod
+    def timestamp_to_datetime(timestamp: int) -> datetime:
         timestamp /= 1000
         return datetime.fromtimestamp(timestamp, tz=pytz.utc)
 
-    def datetime_to_timestamp(self, dt: datetime) -> int:
+    @staticmethod
+    def datetime_to_timestamp(dt: datetime) -> int:
         return int(dt.timestamp() // 1) * 1000
 
     def str_to_timestamp(self, date: str) -> int:
