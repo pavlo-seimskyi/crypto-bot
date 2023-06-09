@@ -132,6 +132,8 @@ class BinaryModelWrapper(ModelWrapper):
 
     def predict(self, x: torch.Tensor) -> torch.Tensor:
         self.model.eval()
+        for preprocessor in self.preprocessors:
+            x = preprocessor.transform(x)
         dataloader = self.build_dataloader(x)
         y_pred = torch.Tensor([]).to(self.device)
         for inputs in dataloader:
