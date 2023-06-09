@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+from torch.utils.data import DataLoader, Dataset
 
 from src.model.wrappers.abstract import ModelWrapper
 
@@ -10,7 +11,7 @@ class BinaryModelWrapper(ModelWrapper):
         model: torch.nn.Module,
         batch_size: int,
         loss_fn: torch.nn.Module,
-        dataset_builder: torch.utils.data.Dataset,
+        dataset_builder: Dataset,
         lr: float = 1e-4,
         weight_decay: float = 1e-4,
         lr_decay_step: int = None,
@@ -125,6 +126,4 @@ class BinaryModelWrapper(ModelWrapper):
 
     def build_dataloader(self, x: torch.Tensor, y: torch.Tensor = None):
         dataset = self.dataset_builder(x, y)
-        return torch.utils.data.DataLoader(
-            dataset, batch_size=self.batch_size, shuffle=False
-        )
+        return DataLoader(dataset, batch_size=self.batch_size, shuffle=False)

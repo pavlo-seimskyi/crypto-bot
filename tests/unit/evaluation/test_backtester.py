@@ -10,9 +10,10 @@ def sample_backtester():
     x = torch.randn(1000, 1)
     y = torch.randn(1000, 1)
     return Backtester(
-        wrapper=None,
         x=x,
         y=y,
+        wrapper=None,
+        evaluation_fn=None,
         gap_proportion=0.2,
         valid_proportion=0.3,
         n_splits=1,

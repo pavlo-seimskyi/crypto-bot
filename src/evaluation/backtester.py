@@ -3,27 +3,26 @@ from typing import Callable
 
 import torch
 
-from src.evaluation.metrics import evaluate
 from src.model.wrappers.abstract import ModelWrapper
 
 
 class Backtester:
     def __init__(
         self,
-        wrapper: ModelWrapper,
-        evaluation_fn: Callable,
         x: torch.Tensor,
         y: torch.Tensor,
-        valid_proportion: float,
+        wrapper: ModelWrapper,
+        evaluation_fn: Callable,
         gap_proportion: float,
+        valid_proportion: float,
         n_splits: int,
         n_epochs: int = 10,
     ):
+        self.x = x
+        self.y = y
         self.default_wrapper = deepcopy(wrapper)
         self.wrapper = wrapper
         self.evaluation_fn = evaluation_fn
-        self.x = x
-        self.y = y
         self.train_proportion = float(1 - gap_proportion - valid_proportion)
         self.gap_proportion = gap_proportion
         self.valid_proportion = valid_proportion

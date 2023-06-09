@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 from torch import Tensor
+from torch.utils.data import DataLoader
 
 
 class ModelWrapper(ABC):
@@ -18,4 +19,8 @@ class ModelWrapper(ABC):
 
     @abstractmethod
     def predict(self) -> Tensor:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def build_dataloader(self) -> DataLoader:
         raise NotImplementedError()
