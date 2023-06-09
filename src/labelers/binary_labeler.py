@@ -1,4 +1,5 @@
 from typing import List
+
 import numpy as np
 
 from src.labelers.abstract import Labeler
@@ -30,7 +31,7 @@ class BinaryLabeler(Labeler):
         prices = data[self.price_col]
         future_prices = np.roll(a=prices, shift=-self.period)
         labels = (future_prices > prices).astype(float).tolist()
-        return labels[:-self.period] + self.period * [np.nan]
+        return labels[: -self.period] + self.period * [np.nan]
 
     def validate(self):
         assert self.period > 0, f"Period must be positive, got {self.period}."

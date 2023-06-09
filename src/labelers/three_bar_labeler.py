@@ -43,16 +43,16 @@ class ThreeBarLabeler(Labeler):
         # Label depending on threshold
         conditions = [
             pct_diff < -self.threshold_pct,  # Below negative threshold
-            ( # Within threshold range
-                (pct_diff >= -self.threshold_pct) & 
-                (pct_diff <= self.threshold_pct)
-            ),  
-            pct_diff > self.threshold_pct  # Above positive threshold
+            (  # Within threshold range
+                (pct_diff >= -self.threshold_pct)
+                & (pct_diff <= self.threshold_pct)
+            ),
+            pct_diff > self.threshold_pct,  # Above positive threshold
         ]
         choices = [0.0, 1.0, 2.0]
         labels = np.select(conditions, choices, default=np.nan).tolist()
         # Add NaNs to the end
-        return labels[:-self.period] + self.period * [np.nan]
+        return labels[: -self.period] + self.period * [np.nan]
 
     def validate(self):
         assert self.period > 0, f"Period must be positive, got {self.period}."
