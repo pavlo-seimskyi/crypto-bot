@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 from torch.utils.data import DataLoader, Dataset
+from copy import deepcopy
 
 from src.model.wrappers.abstract import ModelWrapper
 
@@ -39,7 +40,7 @@ class BinaryModelWrapper(ModelWrapper):
         lr_decay_multiplier : float, optional
             Learning rate will multiply by this number every `lr_decay_step`-th epoch.
         """
-        self.default_model = model
+        self.default_model = deepcopy(model)
         self.model = model
         self.batch_size = batch_size
         self.loss_fn = loss_fn
@@ -57,9 +58,9 @@ class BinaryModelWrapper(ModelWrapper):
         self.set_scheduler()
 
     def reset_model(self):
-        self.model = self.default_model
-        self.optimizer = self.set_optimizer()
-        self.scheduler = self.set_scheduler()
+        self.model = deepcopy(self.default_model)
+        self.set_optimizer()
+        self.set_scheduler()
 
     def set_optimizer(self):
         self.optimizer = torch.optim.AdamW(
