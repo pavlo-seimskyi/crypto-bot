@@ -24,3 +24,7 @@ class ModelWrapper(ABC):
     @abstractmethod
     def build_dataloader(self) -> DataLoader:
         raise NotImplementedError()
+
+    @abstractmethod
+    def reset_model(self):
+        raise NotImplementedError()

@@ -1,4 +1,3 @@
-from copy import deepcopy
 from typing import Callable
 
 import torch
@@ -20,7 +19,6 @@ class Backtester:
     ):
         self.x = x
         self.y = y
-        self.default_wrapper = deepcopy(wrapper)
         self.wrapper = wrapper
         self.evaluation_fn = evaluation_fn
         self.train_proportion = float(1 - gap_proportion - valid_proportion)
@@ -58,7 +56,7 @@ class Backtester:
         self.y_pred_proba = []
 
         for i in range(self.n_splits):
-            self.reset()
+            self.wrapper.reset_model()
 
             train_start = self.step_size * i
             train_end = train_start + self.train_length
@@ -98,9 +96,6 @@ class Backtester:
         # Evaluate all splits
         print("FINAL RESULTS")
         self.evaluation_fn(self.y_true, self.y_pred_proba)
-
-    def reset(self):
-        self.wrapper = self.default_wrapper
 
     def validate(self):
         # Validate proportions

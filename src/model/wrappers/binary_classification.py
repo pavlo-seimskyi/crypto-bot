@@ -1,7 +1,8 @@
+from copy import deepcopy
+
 import numpy as np
 import torch
 from torch.utils.data import DataLoader, Dataset
-from copy import deepcopy
 
 from src.model.wrappers.abstract import ModelWrapper
 
