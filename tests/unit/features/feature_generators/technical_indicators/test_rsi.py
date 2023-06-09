@@ -16,11 +16,13 @@ def rsi_instance():
     return RSI(input_col="price", period=3)
 
 
+@pytest.mark.unit
 def test_initialize(sample_data, rsi_instance):
     rsi_instance.initialize(sample_data)
     assert isinstance(rsi_instance.talipp_instance, RSI_talipp)
 
 
+@pytest.mark.unit
 def test_output_values(sample_data, rsi_instance):
     rsi_instance.initialize(sample_data)
 
@@ -35,6 +37,7 @@ def test_output_values(sample_data, rsi_instance):
     assert rsi_instance.output_values == expected_output_values
 
 
+@pytest.mark.unit
 def test_add_value(sample_data, rsi_instance):
     rsi_instance.initialize(sample_data)
 
@@ -53,5 +56,6 @@ def test_add_value(sample_data, rsi_instance):
     assert rsi_instance.output_values == expected_output_values
 
 
+@pytest.mark.unit
 def test_name(rsi_instance):
     assert rsi_instance.name == "RSI__price__3"

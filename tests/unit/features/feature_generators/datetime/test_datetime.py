@@ -23,6 +23,7 @@ def sample_data_later():
     return [1681928160000]  # 2023-04-19 18:16:00
 
 
+@pytest.mark.unit
 def test_initialize(sample_data):
     timestamp_col = "timestamp"
     data = pd.DataFrame({timestamp_col: sample_data})
@@ -43,6 +44,7 @@ def test_initialize(sample_data):
     pd.testing.assert_series_equal(dt.time_series, expected_series)
 
 
+@pytest.mark.unit
 def test_add_value(sample_data, sample_data_later):
     timestamp_col = "timestamp"
     data = pd.DataFrame({timestamp_col: sample_data})
@@ -66,6 +68,7 @@ def test_add_value(sample_data, sample_data_later):
     pd.testing.assert_series_equal(dt.time_series, expected_series)
 
 
+@pytest.mark.unit
 def test_output_values(sample_data):
     timestamp_col = "timestamp"
     data = pd.DataFrame({timestamp_col: sample_data})
@@ -91,6 +94,7 @@ def test_output_values(sample_data):
     assert output_values == expected_output_values
 
 
+@pytest.mark.unit
 def test_to_one_hot_one_unique():
     data = [0, 0, 0, 0, 0]
     expected_result = {
@@ -103,6 +107,7 @@ def test_to_one_hot_one_unique():
     assert result == expected_result
 
 
+@pytest.mark.unit
 def test_to_one_hot_more_than_one_unique():
     data = [1, 2, 1, 3, 1, 2]
     expected_result = {
@@ -116,6 +121,7 @@ def test_to_one_hot_more_than_one_unique():
     assert result == expected_result
 
 
+@pytest.mark.unit
 def test_time_of_day():
     assert DateTime.time_of_day(6) == "morning"
     assert DateTime.time_of_day(12) == "afternoon"

@@ -16,11 +16,13 @@ def bb_instance():
     return BB(input_col="price", period=2)
 
 
+@pytest.mark.unit
 def test_initialize(sample_data, bb_instance):
     bb_instance.initialize(sample_data)
     assert isinstance(bb_instance.talipp_instance, BB_talipp)
 
 
+@pytest.mark.unit
 def test_output_values(sample_data, bb_instance):
     bb_instance.initialize(sample_data)
 
@@ -33,6 +35,7 @@ def test_output_values(sample_data, bb_instance):
     assert bb_instance.output_values == expected_output_values
 
 
+@pytest.mark.unit
 def test_add_value(sample_data, bb_instance):
     bb_instance.initialize(sample_data)
 
@@ -48,5 +51,6 @@ def test_add_value(sample_data, bb_instance):
     assert bb_instance.output_values == expected_output_values
 
 
+@pytest.mark.unit
 def test_name(bb_instance):
     assert bb_instance.name == "BB__price"

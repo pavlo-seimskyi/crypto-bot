@@ -30,11 +30,13 @@ def obv_instance():
     )
 
 
+@pytest.mark.unit
 def test_initialize(sample_data, obv_instance):
     obv_instance.initialize(sample_data)
     assert isinstance(obv_instance.talipp_instance, OBV_talipp)
 
 
+@pytest.mark.unit
 def test_output_values(sample_data, obv_instance):
     obv_instance.initialize(sample_data)
 
@@ -43,6 +45,7 @@ def test_output_values(sample_data, obv_instance):
     assert obv_instance.output_values == expected_output_values
 
 
+@pytest.mark.unit
 def test_add_value(sample_data, obv_instance):
     obv_instance.initialize(sample_data)
 
@@ -62,5 +65,6 @@ def test_add_value(sample_data, obv_instance):
     assert obv_instance.output_values == expected_output_values
 
 
+@pytest.mark.unit
 def test_name(obv_instance):
     assert obv_instance.name == "OBV__close"
