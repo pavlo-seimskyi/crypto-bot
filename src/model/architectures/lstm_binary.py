@@ -18,8 +18,8 @@ class LSTMBinaryClassifier(torch.nn.Module):
 
     def forward(self, x):
         # Initialize hidden and cell states
-        h0 = torch.zeros(self.n_layers, x.size(0), self.n_hidden)
-        c0 = torch.zeros(self.n_layers, x.size(0), self.n_hidden)
+        h0 = torch.zeros(self.n_layers, x.size(0), self.n_hidden).to(x.device)
+        c0 = torch.zeros(self.n_layers, x.size(0), self.n_hidden).to(x.device)
         # Forward propagate the LSTM
         out, _ = self.lstm(x, (h0, c0))
         # Only take the output from the final timetep
