@@ -6,7 +6,6 @@ from sklearn.metrics import (
     ConfusionMatrixDisplay,
     accuracy_score,
     average_precision_score,
-    balanced_accuracy_score,
     f1_score,
     precision_score,
     recall_score,
@@ -14,7 +13,7 @@ from sklearn.metrics import (
 from torch import Tensor
 
 
-def evaluate(y_test: Tensor, y_pred_proba: Tensor) -> None:
+def evaluate_binary(y_test: Tensor, y_pred_proba: Tensor) -> None:
     """
     Evaluate model performance by computing the metrics
     and plotting the confusion matrix.
