@@ -16,11 +16,13 @@ def ema_instance():
     return EMA(input_col="price", period=3)
 
 
+@pytest.mark.unit
 def test_initialize(sample_data, ema_instance):
     ema_instance.initialize(sample_data)
     assert isinstance(ema_instance.talipp_instance, EMA_talipp)
 
 
+@pytest.mark.unit
 def test_output_values(sample_data, ema_instance):
     ema_instance.initialize(sample_data)
 
@@ -35,6 +37,7 @@ def test_output_values(sample_data, ema_instance):
     assert ema_instance.output_values == expected_output_values
 
 
+@pytest.mark.unit
 def test_add_value(sample_data, ema_instance):
     ema_instance.initialize(sample_data)
 
@@ -46,5 +49,6 @@ def test_add_value(sample_data, ema_instance):
     assert ema_instance.output_values == expected_output_values
 
 
+@pytest.mark.unit
 def test_name(ema_instance):
     assert ema_instance.name == "EMA__price__3"

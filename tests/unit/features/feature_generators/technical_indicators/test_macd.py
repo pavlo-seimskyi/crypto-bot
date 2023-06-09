@@ -18,11 +18,13 @@ def macd_instance():
     )
 
 
+@pytest.mark.unit
 def test_initialize(sample_data, macd_instance):
     macd_instance.initialize(sample_data)
     assert isinstance(macd_instance.talipp_instance, MACD_talipp)
 
 
+@pytest.mark.unit
 def test_output_values(sample_data, macd_instance):
     macd_instance.initialize(sample_data)
 
@@ -62,6 +64,7 @@ def test_output_values(sample_data, macd_instance):
     assert macd_instance.output_values == expected_output_values
 
 
+@pytest.mark.unit
 def test_add_value(sample_data, macd_instance):
     macd_instance.initialize(sample_data)
 
@@ -107,5 +110,6 @@ def test_add_value(sample_data, macd_instance):
     assert macd_instance.output_values == expected_output_values
 
 
+@pytest.mark.unit
 def test_name(macd_instance):
     assert macd_instance.name == "MACD__price__fast_2__slow_5__signal_4"

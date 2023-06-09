@@ -16,11 +16,13 @@ def sma_instance():
     return SMA(input_col="price", period=3)
 
 
+@pytest.mark.unit
 def test_initialize(sample_data, sma_instance):
     sma_instance.initialize(sample_data)
     assert isinstance(sma_instance.talipp_instance, SMA_talipp)
 
 
+@pytest.mark.unit
 def test_output_values(sample_data, sma_instance):
     sma_instance.initialize(sample_data)
 
@@ -35,6 +37,7 @@ def test_output_values(sample_data, sma_instance):
     assert sma_instance.output_values == expected_output_values
 
 
+@pytest.mark.unit
 def test_add_value(sample_data, sma_instance):
     sma_instance.initialize(sample_data)
 
@@ -53,5 +56,6 @@ def test_add_value(sample_data, sma_instance):
     assert sma_instance.output_values == expected_output_values
 
 
+@pytest.mark.unit
 def test_name(sma_instance):
     assert sma_instance.name == "SMA__price__3"
