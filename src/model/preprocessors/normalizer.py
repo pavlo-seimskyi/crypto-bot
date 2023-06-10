@@ -7,13 +7,14 @@ class Normalizer:
     Brings mean to 0 and standard deviation to 1.
     """
 
-    def __init__(self):
+    def __init__(self, dim: int = 0):
         self.mean = None
         self.std = None
+        self.dim = dim
 
     def fit(self, x: Tensor) -> None:
-        self.mean = x.mean()
-        self.std = x.std()
+        self.mean = x.mean(dim=self.dim)
+        self.std = x.std(dim=self.dim)
 
     def transform(self, x: Tensor) -> Tensor:
         assert (
