@@ -129,9 +129,9 @@ class BinaryModelWrapper(ModelWrapper):
         return self.loss_fn(y_pred, y_true).item()
 
     def predict(self, x: torch.Tensor) -> torch.Tensor:
-        self.model.eval()
         for preprocessor in self.preprocessors:
             x = preprocessor.transform(x)
+        self.model.eval()
         dataloader = self.build_dataloader(x)
         y_pred = torch.Tensor([]).to(self.device)
         for inputs in dataloader:

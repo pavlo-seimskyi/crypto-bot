@@ -21,7 +21,11 @@ class StandardScaler:
         assert (
             self.mean is not None and self.std is not None
         ), "Fit the scaler first."
-        return (x - self.mean) / self.std
+        return torch.where(
+            self.std != 0,
+            torch.div(x - self.mean, self.std),
+            0.,  # return 0 if std is 0
+        )
 
     def fit_transform(self, x: Tensor) -> Tensor:
         self.fit(x)

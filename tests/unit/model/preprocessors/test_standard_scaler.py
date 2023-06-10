@@ -81,6 +81,28 @@ def test_transform_dim_2():
 
 
 @pytest.mark.unit
+def test_transform_all_zeros():
+    # One column is always zeroes
+    torch.manual_seed(42)
+    tensor = torch.stack(
+        (torch.randn(10), torch.zeros(10)), dim=1
+    )
+
+    scaler = StandardScaler(dim=0)
+    scaler.fit(tensor)
+    scaled_tensor = scaler.transform(tensor)
+
+    # No NaNs
+    assert torch.isnan(scaled_tensor).sum().item() == 0
+    # Mean of both columns is 0
+    assert almost_equal(scaled_tensor.mean(dim=0), torch.zeros(2))
+    # Std of zeroed column is 0, not 1
+    assert almost_equal(scaled_tensor.std(dim=0), torch.Tensor([1, 0]))
+    # Zeroed column all zeroes
+    assert almost_equal(scaled_tensor[:, 1], torch.zeros(10))
+
+
+@pytest.mark.unit
 def test_fit_transform():
     scaler = StandardScaler(dim=0)
     torch.manual_seed(42)
