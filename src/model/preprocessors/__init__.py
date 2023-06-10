@@ -1,5 +1,5 @@
-from src.model.preprocessors.normalizer import Normalizer
+from src.model.preprocessors.scaler import StandardScaler
 
 __all__ = [
-    "Normalizer",
+    "StandardScaler",
 ]
