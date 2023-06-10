@@ -1,9 +1,11 @@
 from copy import deepcopy
+from typing import Any, Dict, List
 
 import numpy as np
 import torch
 from torch.utils.data import DataLoader, Dataset
 
+from src.model.preprocessors.abstract import Preprocessor
 from src.model.wrappers.abstract import ModelWrapper
 
 
@@ -14,10 +16,15 @@ class BinaryModelWrapper(ModelWrapper):
         batch_size: int,
         loss_fn: torch.nn.Module,
         dataset_builder: Dataset,
+        dataset_builder_kwargs: Dict[str, Any] = {},
+        preprocessors: List[Preprocessor] = [],
         lr: float = 1e-4,
         weight_decay: float = 1e-4,
         lr_decay_step: int = None,
         lr_decay_multiplier: float = None,
+        device: torch.device = torch.device(
+            "cuda" if torch.cuda.is_available() else "cpu"
+        ),
     ):
         """
         Model wrapper for binary classification.
@@ -39,22 +46,26 @@ class BinaryModelWrapper(ModelWrapper):
         lr_decay_step : int, optional
             Learning rate decay step, by default 10.
         lr_decay_multiplier : float, optional
-            Learning rate will multiply by this number every `lr_decay_step`-th epoch.
+            Learning rate will multiply by this number
+            every `lr_decay_step`-th epoch. By default 0.1.
+        device : torch.device, optional
+            Device to run the model on. By default,
+            selects CUDA if a GPU is available and CPU otherwise.
         """
-        self.default_model = deepcopy(model)
-        self.model = model
+        self.device = device
+        self.model = model.to(self.device)
+        self.default_model = deepcopy(self.model)
+
         self.batch_size = batch_size
-        self.loss_fn = loss_fn
+        self.loss_fn = loss_fn.to(self.device)
         self.dataset_builder = dataset_builder
-        self.device = torch.device(
-            "cuda" if torch.cuda.is_available() else "cpu"
-        )
+        self.dataset_builder_kwargs = dataset_builder_kwargs
+        self.preprocessors = preprocessors
 
         self.lr = lr
         self.weight_decay = weight_decay
         self.lr_decay_step = lr_decay_step
         self.lr_decay_multiplier = lr_decay_multiplier
-
         self.set_optimizer()
         self.set_scheduler()
 
@@ -85,6 +96,8 @@ class BinaryModelWrapper(ModelWrapper):
         y_valid: torch.Tensor = None,
         n_epochs: int = 10,
     ):
+        for preprocessor in self.preprocessors:
+            x_train = preprocessor.fit_transform(x_train)
         for epoch in range(n_epochs):
             train_loss = self.train_epoch(x_train, y_train)
             summary = f"Epoch: {epoch + 1} | Train Loss: {train_loss:.3f}"
@@ -116,6 +129,8 @@ class BinaryModelWrapper(ModelWrapper):
         return self.loss_fn(y_pred, y_true).item()
 
     def predict(self, x: torch.Tensor) -> torch.Tensor:
+        for preprocessor in self.preprocessors:
+            x = preprocessor.transform(x)
         self.model.eval()
         dataloader = self.build_dataloader(x)
         y_pred = torch.Tensor([]).to(self.device)
@@ -127,5 +142,5 @@ class BinaryModelWrapper(ModelWrapper):
         return y_pred
 
     def build_dataloader(self, x: torch.Tensor, y: torch.Tensor = None):
-        dataset = self.dataset_builder(x, y)
+        dataset = self.dataset_builder(x, y, **self.dataset_builder_kwargs)
         return DataLoader(dataset, batch_size=self.batch_size, shuffle=False)
