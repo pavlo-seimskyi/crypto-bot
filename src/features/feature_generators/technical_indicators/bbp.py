@@ -8,7 +8,7 @@ class BBP(FeatureGenerator):
     """
     Bollinger Bands Percentile.
     """
-    
+
     def __init__(
         self, input_col: str, period: int = 14, std_dev_multiplier: int = 2
     ) -> None:

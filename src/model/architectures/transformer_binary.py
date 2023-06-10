@@ -18,9 +18,9 @@ class TransformerBinaryClassifier(torch.nn.Module):
         self.pos_encoder = PositionalEncoding(n_embedding_dims, dropout)
         self.layer_norm = torch.nn.LayerNorm(n_embedding_dims)
         encoder_layer = torch.nn.TransformerEncoderLayer(
-            d_model=n_embedding_dims, 
-            nhead=n_head, 
-            batch_first=True, 
+            d_model=n_embedding_dims,
+            nhead=n_head,
+            batch_first=True,
             dropout=dropout,
         )
         self.transformer_encoder = torch.nn.TransformerEncoder(

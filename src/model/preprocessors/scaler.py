@@ -24,7 +24,7 @@ class StandardScaler:
         return torch.where(
             self.std != 0,
             torch.div(x - self.mean, self.std),
-            0.,  # return 0 if std is 0
+            0.0,  # return 0 if std is 0
         )
 
     def fit_transform(self, x: Tensor) -> Tensor:
