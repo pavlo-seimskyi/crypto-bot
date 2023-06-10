@@ -98,8 +98,6 @@ class BinaryModelWrapper(ModelWrapper):
     ):
         for preprocessor in self.preprocessors:
             x_train = preprocessor.fit_transform(x_train)
-            if x_valid is not None and y_valid is not None:
-                x_valid = preprocessor.transform(x_valid)
         for epoch in range(n_epochs):
             train_loss = self.train_epoch(x_train, y_train)
             summary = f"Epoch: {epoch + 1} | Train Loss: {train_loss:.3f}"
