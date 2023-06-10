@@ -18,7 +18,10 @@ class TransformerBinaryClassifier(torch.nn.Module):
         self.pos_encoder = PositionalEncoding(n_embedding_dims, dropout)
         self.layer_norm = torch.nn.LayerNorm(n_embedding_dims)
         encoder_layer = torch.nn.TransformerEncoderLayer(
-            n_embedding_dims, n_head
+            d_model=n_embedding_dims, 
+            nhead=n_head, 
+            batch_first=True, 
+            dropout=dropout,
         )
         self.transformer_encoder = torch.nn.TransformerEncoder(
             encoder_layer, n_layers
@@ -31,11 +34,7 @@ class TransformerBinaryClassifier(torch.nn.Module):
         out = self.embedding(x)
         out = self.pos_encoder(out)
         out = self.layer_norm(out)
-        # PyTorch's TransformerEncoder expects input shape
-        # (sequence_length, batch_size, n_embedding_dims), hence permutation twice
-        out = out.permute(1, 0, 2)
         out = self.transformer_encoder(out)
-        out = out.permute(1, 0, 2)
         out = out[:, -1, :]  # output of the last sequence step
         # out = out.mean(dim=1)  # mean of all sequence steps
         out = self.output_layer(out)
