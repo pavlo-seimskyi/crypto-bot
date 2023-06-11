@@ -84,9 +84,7 @@ def test_transform_dim_2():
 def test_transform_all_zeros():
     # One column is always zeroes
     torch.manual_seed(42)
-    tensor = torch.stack(
-        (torch.randn(10), torch.zeros(10)), dim=1
-    )
+    tensor = torch.stack((torch.randn(10), torch.zeros(10)), dim=1)
 
     scaler = StandardScaler(dim=0)
     scaler.fit(tensor)
