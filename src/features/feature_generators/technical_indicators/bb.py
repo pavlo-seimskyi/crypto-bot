@@ -39,4 +39,8 @@ class BB(FeatureGenerator):
 
     @property
     def name(self):
-        return f"BB__{self.input_col}"
+        return (
+            f"BB__{self.input_col}__"
+            f"period_{self.period}__"
+            f"std_mul_{self.std_dev_multiplier}"
+        )

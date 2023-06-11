@@ -13,7 +13,7 @@ def sample_data():
 
 @pytest.fixture
 def bb_instance():
-    return BB(input_col="price", period=2)
+    return BB(input_col="price", period=2, std_dev_multiplier=2)
 
 
 @pytest.mark.unit
@@ -53,4 +53,4 @@ def test_add_value(sample_data, bb_instance):
 
 @pytest.mark.unit
 def test_name(bb_instance):
-    assert bb_instance.name == "BB__price"
+    assert bb_instance.name == "BB__price__period_2__std_mul_2"
