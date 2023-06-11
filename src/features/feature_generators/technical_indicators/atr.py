@@ -36,9 +36,9 @@ class ATR(FeatureGenerator):
     def add_value(self, data, purging: bool = False):
         new_value = OHLCVFactory.from_dict(
             {
-                "high": data[self.high_col],
-                "low": data[self.low_col],
-                "close": data[self.close_col],
+                "high": [data[self.high_col]],
+                "low": [data[self.low_col]],
+                "close": [data[self.close_col]],
             }
         )
         self.talipp_instance.add_input_value(new_value)
@@ -53,4 +53,4 @@ class ATR(FeatureGenerator):
 
     @property
     def name(self):
-        return f"ATR__{self.input_col}__{self.period}"
+        return f"ATR__{self.close_col}__{self.period}"
