@@ -10,7 +10,7 @@ class BBP(FeatureGenerator):
     """
 
     def __init__(
-        self, input_col: str, period: int = 14, std_dev_multiplier: int = 2
+        self, input_col: str, period: int = 200, std_dev_multiplier: int = 2
     ) -> None:
         super().__init__()
         self.talipp_instance = None
@@ -33,19 +33,19 @@ class BBP(FeatureGenerator):
     @property
     def output_values(self):
         assert self.talipp_instance is not None, "Initialize first."
-        nans = (self.period - 1) * [np.nan]
+        offset_idx = self.period - 1
+        nans = offset_idx * [np.nan]
         values = self.talipp_instance.output_values
-        lower = np.array(nans + [v.lb for v in values])
-        upper = np.array(nans + [v.ub for v in values])
-        prices = np.array(self.talipp_instance.input_values)
-        bb_percentile = (prices - lower) / (upper - lower)
-        return bb_percentile.tolist()
-        return {
-            "lower": nans + [v.lb for v in values],
-            "middle": nans + [v.cb for v in values],
-            "upper": nans + [v.ub for v in values],
-        }
+        lower = np.array([v.lb for v in values])
+        upper = np.array([v.ub for v in values])
+        price = np.array(self.talipp_instance.input_values[offset_idx:])
+        bb_percentile = (price - lower) / (upper - lower)
+        return nans + bb_percentile.tolist()
 
     @property
     def name(self):
-        return f"BB__{self.input_col}"
+        return (
+            f"BBP__{self.input_col}__"
+            f"period_{self.period}__"
+            f"std_mul_{self.std_dev_multiplier}"
+        )
