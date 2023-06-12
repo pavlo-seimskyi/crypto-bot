@@ -1,5 +1,6 @@
 from copy import deepcopy
 from typing import Any, Dict, List
+from matplotlib import pyplot as plt
 
 import numpy as np
 import torch
@@ -69,6 +70,9 @@ class BinaryModelWrapper(ModelWrapper):
         self.set_optimizer()
         self.set_scheduler()
 
+        self.train_losses = []
+        self.valid_losses = []
+
     def reset_model(self):
         self.model = deepcopy(self.default_model)
         self.set_optimizer()
@@ -95,7 +99,9 @@ class BinaryModelWrapper(ModelWrapper):
         x_valid: torch.Tensor = None,
         y_valid: torch.Tensor = None,
         n_epochs: int = 10,
+        plot_losses: bool = True,
     ):
+        self.reset_losses()
         for preprocessor in self.preprocessors:
             x_train = preprocessor.fit_transform(x_train)
         for epoch in range(n_epochs):
@@ -105,6 +111,12 @@ class BinaryModelWrapper(ModelWrapper):
                 valid_loss = self.evaluate(x_valid, y_valid)
                 summary += f" | Valid Loss: {valid_loss:.3f}"
             print(summary)
+        if plot_losses:
+            self.plot_losses()
+
+    def reset_losses(self):
+        self.train_losses = []
+        self.valid_losses = []
 
     def train_epoch(self, x: torch.Tensor, y: torch.Tensor) -> float:
         self.model.train()
@@ -130,7 +142,9 @@ class BinaryModelWrapper(ModelWrapper):
             losses.append(loss.item())
             self.optimizer.step()
         self.scheduler.step()
-        return np.mean(losses)
+        mean_loss = np.mean(losses)
+        self.train_losses.append(mean_loss)
+        return mean_loss
 
     def evaluate(self, x: torch.Tensor, y: torch.Tensor) -> float:
         y_pred = self.predict(x)
@@ -140,7 +154,9 @@ class BinaryModelWrapper(ModelWrapper):
         print(f"EVALUATING EPOCH")
         print(f"`y_pred` examples: {y_pred[:5]}")
         print(f"`y_true` examples: {y_true[:5]}")
-        return self.loss_fn(y_pred, y_true).item()
+        loss = self.loss_fn(y_pred, y_true).item()
+        self.valid_losses.append(loss)
+        return loss
 
     def predict(self, x: torch.Tensor) -> torch.Tensor:
         self.model.eval()
@@ -158,7 +174,14 @@ class BinaryModelWrapper(ModelWrapper):
                 batch_pred = self.model(inputs)
             y_pred = torch.cat((y_pred, batch_pred), dim=0)
         return y_pred
-
+    
     def build_dataloader(self, x: torch.Tensor, y: torch.Tensor = None):
         dataset = self.dataset_builder(x, y, **self.dataset_builder_kwargs)
         return DataLoader(dataset, batch_size=self.batch_size, shuffle=False)
+    
+    def plot_losses(self):
+        plt.plot(self.train_losses, label="Train Loss")
+        if len(self.valid_losses) > 0:
+            plt.plot(self.valid_losses, label="Valid Loss")
+        plt.legend()
+        plt.show()
