@@ -39,7 +39,12 @@ class BBP(FeatureGenerator):
         lower = np.array([v.lb for v in values])
         upper = np.array([v.ub for v in values])
         price = np.array(self.talipp_instance.input_values[offset_idx:])
-        bb_percentile = (price - lower) / (upper - lower)
+        # bb_percentile = (price - lower) / (upper - lower)
+        bb_percentile = np.where(
+            (upper - lower) != 0,
+            (price - lower) / (upper - lower),
+            0.5,  # return 0.5 if upper == lower
+        )
         return nans + bb_percentile.tolist()
 
     @property
