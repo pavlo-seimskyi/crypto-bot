@@ -108,10 +108,21 @@ class BinaryModelWrapper(ModelWrapper):
 
     def train_epoch(self, x: torch.Tensor, y: torch.Tensor) -> float:
         self.model.train()
+        x, y = x.to(self.device), y.to(self.device)
         dataloader = self.build_dataloader(x, y)
         losses = []
+        i = 0
         for inputs, targets in dataloader:
-            inputs, targets = inputs.to(self.device), targets.to(self.device)
+            if i == 0:
+                print(f"TRAINING EPOCH")
+                print(f"`inputs` shape: {inputs.size()}")
+                print(f"`inputs` example: {inputs[0]}")
+                print(
+                    f"`inputs` mean and std: {inputs[0].mean()}, {inputs[0].std()}"
+                )
+                print(f"`targets` shape: {targets.size()}")
+                print(f"`targets` example: {targets[0]}")
+            i += 1
             self.optimizer.zero_grad()
             batch_pred = self.model(inputs)
             loss = self.loss_fn(batch_pred, targets)
@@ -125,13 +136,20 @@ class BinaryModelWrapper(ModelWrapper):
         y_pred = self.predict(x)
         # Truncate `y_true` to match `y_pred`
         dl_valid = self.build_dataloader(x, y)
-        y_true = dl_valid.dataset.y
+        y_true = dl_valid.dataset.y.to(self.device)
+        print(f"EVALUATING EPOCH")
+        print(f"`y_pred` examples: {y_pred[:5]}")
+        print(f"`y_true` examples: {y_true[:5]}")
         return self.loss_fn(y_pred, y_true).item()
 
     def predict(self, x: torch.Tensor) -> torch.Tensor:
+        self.model.eval()
         for preprocessor in self.preprocessors:
             x = preprocessor.transform(x)
-        self.model.eval()
+        x = x.to(self.device)
+        print(f"PREDICTING")
+        print(f"`x` shape: {x.size()}")
+        print(f"`x` example: {x[0]}")
         dataloader = self.build_dataloader(x)
         y_pred = torch.Tensor([]).to(self.device)
         for inputs in dataloader:
