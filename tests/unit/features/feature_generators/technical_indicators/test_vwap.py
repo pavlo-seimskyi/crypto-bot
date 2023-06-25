@@ -42,7 +42,7 @@ def test_output_values(sample_data, vwap_instance):
         2.4473684210526314,
         2.711111111111111,
         3.453488372093023,
-        3.505847953216374
+        3.505847953216374,
     ]
 
     assert vwap_instance.output_values == expected_output_values
@@ -68,7 +68,7 @@ def test_add_value(sample_data, vwap_instance):
         2.711111111111111,
         3.453488372093023,
         3.505847953216374,
-        4.759740259740259
+        4.759740259740259,
     ]
 
     assert vwap_instance.output_values == expected_output_values

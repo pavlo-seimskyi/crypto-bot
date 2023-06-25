@@ -30,7 +30,7 @@ def test_initialize_range_0(bbp_instance):
     bbp_instance.initialize(sample_data)
 
     expected_output_values = [np.nan, np.nan, 0.5, 0.5, 0.5]
-    
+
     assert bbp_instance.output_values == expected_output_values
 
 
