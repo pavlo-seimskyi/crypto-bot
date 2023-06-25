@@ -3,6 +3,7 @@ from typing import Any, Dict, List
 
 import numpy as np
 import torch
+from matplotlib import pyplot as plt
 from torch.utils.data import DataLoader, Dataset
 
 from src.model.preprocessors.abstract import Preprocessor
@@ -69,6 +70,9 @@ class BinaryModelWrapper(ModelWrapper):
         self.set_optimizer()
         self.set_scheduler()
 
+        self.train_losses = []
+        self.valid_losses = []
+
     def reset_model(self):
         self.model = deepcopy(self.default_model)
         self.set_optimizer()
@@ -95,23 +99,32 @@ class BinaryModelWrapper(ModelWrapper):
         x_valid: torch.Tensor = None,
         y_valid: torch.Tensor = None,
         n_epochs: int = 10,
+        plot_losses: bool = True,
     ):
+        self.reset_losses()
         for preprocessor in self.preprocessors:
             x_train = preprocessor.fit_transform(x_train)
         for epoch in range(n_epochs):
             train_loss = self.train_epoch(x_train, y_train)
+            self.train_losses.append(train_loss)
             summary = f"Epoch: {epoch + 1} | Train Loss: {train_loss:.3f}"
             if x_valid is not None and y_valid is not None:
                 valid_loss = self.evaluate(x_valid, y_valid)
+                self.valid_losses.append(valid_loss)
                 summary += f" | Valid Loss: {valid_loss:.3f}"
             print(summary)
+        if plot_losses:
+            self.plot_losses()
+
+    def reset_losses(self):
+        self.train_losses = []
+        self.valid_losses = []
 
     def train_epoch(self, x: torch.Tensor, y: torch.Tensor) -> float:
         self.model.train()
         dataloader = self.build_dataloader(x, y)
         losses = []
         for inputs, targets in dataloader:
-            inputs, targets = inputs.to(self.device), targets.to(self.device)
             self.optimizer.zero_grad()
             batch_pred = self.model(inputs)
             loss = self.loss_fn(batch_pred, targets)
@@ -122,20 +135,21 @@ class BinaryModelWrapper(ModelWrapper):
         return np.mean(losses)
 
     def evaluate(self, x: torch.Tensor, y: torch.Tensor) -> float:
+        x, y = x.to(self.device), y.to(self.device)
         y_pred = self.predict(x)
         # Truncate `y_true` to match `y_pred`
-        dl_valid = self.build_dataloader(x, y)
-        y_true = dl_valid.dataset.y
-        return self.loss_fn(y_pred, y_true).item()
+        y_true = self.build_dataloader(x, y).dataset.y
+        loss = self.loss_fn(y_pred, y_true).item()
+        return loss
 
     def predict(self, x: torch.Tensor) -> torch.Tensor:
+        self.model.eval()
         for preprocessor in self.preprocessors:
             x = preprocessor.transform(x)
-        self.model.eval()
+        x = x.to(self.device)
         dataloader = self.build_dataloader(x)
         y_pred = torch.Tensor([]).to(self.device)
         for inputs in dataloader:
-            inputs = inputs.to(self.device)
             with torch.no_grad():
                 batch_pred = self.model(inputs)
             y_pred = torch.cat((y_pred, batch_pred), dim=0)
@@ -144,3 +158,10 @@ class BinaryModelWrapper(ModelWrapper):
     def build_dataloader(self, x: torch.Tensor, y: torch.Tensor = None):
         dataset = self.dataset_builder(x, y, **self.dataset_builder_kwargs)
         return DataLoader(dataset, batch_size=self.batch_size, shuffle=False)
+
+    def plot_losses(self):
+        plt.plot(self.train_losses, label="Train Loss")
+        if len(self.valid_losses) > 0:
+            plt.plot(self.valid_losses, label="Valid Loss")
+        plt.legend()
+        plt.show()

@@ -23,6 +23,18 @@ def test_initialize(sample_data, bbp_instance):
 
 
 @pytest.mark.unit
+def test_initialize_range_0(bbp_instance):
+    # BBP should be 0.5 when the upper and lower bands are equal
+    sample_data = pd.DataFrame({"price": [1.0, 1.0, 1.0, 1.0, 1.0]})
+
+    bbp_instance.initialize(sample_data)
+
+    expected_output_values = [np.nan, np.nan, 0.5, 0.5, 0.5]
+
+    assert bbp_instance.output_values == expected_output_values
+
+
+@pytest.mark.unit
 def test_output_values(sample_data, bbp_instance):
     bbp_instance.initialize(sample_data)
 
