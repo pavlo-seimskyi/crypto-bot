@@ -1,9 +1,9 @@
 from copy import deepcopy
 from typing import Any, Dict, List
-from matplotlib import pyplot as plt
 
 import numpy as np
 import torch
+from matplotlib import pyplot as plt
 from torch.utils.data import DataLoader, Dataset
 
 from src.model.preprocessors.abstract import Preprocessor
@@ -106,9 +106,11 @@ class BinaryModelWrapper(ModelWrapper):
             x_train = preprocessor.fit_transform(x_train)
         for epoch in range(n_epochs):
             train_loss = self.train_epoch(x_train, y_train)
+            self.train_losses.append(train_loss)
             summary = f"Epoch: {epoch + 1} | Train Loss: {train_loss:.3f}"
             if x_valid is not None and y_valid is not None:
                 valid_loss = self.evaluate(x_valid, y_valid)
+                self.valid_losses.append(valid_loss)
                 summary += f" | Valid Loss: {valid_loss:.3f}"
             print(summary)
         if plot_losses:
@@ -120,21 +122,9 @@ class BinaryModelWrapper(ModelWrapper):
 
     def train_epoch(self, x: torch.Tensor, y: torch.Tensor) -> float:
         self.model.train()
-        x, y = x.to(self.device), y.to(self.device)
         dataloader = self.build_dataloader(x, y)
         losses = []
-        i = 0
         for inputs, targets in dataloader:
-            if i == 0:
-                print(f"TRAINING EPOCH")
-                print(f"`inputs` shape: {inputs.size()}")
-                print(f"`inputs` example: {inputs[0]}")
-                print(
-                    f"`inputs` mean and std: {inputs[0].mean()}, {inputs[0].std()}"
-                )
-                print(f"`targets` shape: {targets.size()}")
-                print(f"`targets` example: {targets[0]}")
-            i += 1
             self.optimizer.zero_grad()
             batch_pred = self.model(inputs)
             loss = self.loss_fn(batch_pred, targets)
@@ -142,20 +132,14 @@ class BinaryModelWrapper(ModelWrapper):
             losses.append(loss.item())
             self.optimizer.step()
         self.scheduler.step()
-        mean_loss = np.mean(losses)
-        self.train_losses.append(mean_loss)
-        return mean_loss
+        return np.mean(losses)
 
     def evaluate(self, x: torch.Tensor, y: torch.Tensor) -> float:
+        x, y = x.to(self.device), y.to(self.device)
         y_pred = self.predict(x)
         # Truncate `y_true` to match `y_pred`
-        dl_valid = self.build_dataloader(x, y)
-        y_true = dl_valid.dataset.y.to(self.device)
-        print(f"EVALUATING EPOCH")
-        print(f"`y_pred` examples: {y_pred[:5]}")
-        print(f"`y_true` examples: {y_true[:5]}")
+        y_true = self.build_dataloader(x, y).dataset.y
         loss = self.loss_fn(y_pred, y_true).item()
-        self.valid_losses.append(loss)
         return loss
 
     def predict(self, x: torch.Tensor) -> torch.Tensor:
@@ -163,22 +147,18 @@ class BinaryModelWrapper(ModelWrapper):
         for preprocessor in self.preprocessors:
             x = preprocessor.transform(x)
         x = x.to(self.device)
-        print(f"PREDICTING")
-        print(f"`x` shape: {x.size()}")
-        print(f"`x` example: {x[0]}")
         dataloader = self.build_dataloader(x)
         y_pred = torch.Tensor([]).to(self.device)
         for inputs in dataloader:
-            inputs = inputs.to(self.device)
             with torch.no_grad():
                 batch_pred = self.model(inputs)
             y_pred = torch.cat((y_pred, batch_pred), dim=0)
         return y_pred
-    
+
     def build_dataloader(self, x: torch.Tensor, y: torch.Tensor = None):
         dataset = self.dataset_builder(x, y, **self.dataset_builder_kwargs)
         return DataLoader(dataset, batch_size=self.batch_size, shuffle=False)
-    
+
     def plot_losses(self):
         plt.plot(self.train_losses, label="Train Loss")
         if len(self.valid_losses) > 0:
