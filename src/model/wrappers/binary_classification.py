@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 import numpy as np
 import torch
@@ -163,5 +163,136 @@ class BinaryModelWrapper(ModelWrapper):
         plt.plot(self.train_losses, label="Train Loss")
         if len(self.valid_losses) > 0:
             plt.plot(self.valid_losses, label="Valid Loss")
+        plt.legend()
+        plt.show()
+
+    def find_optimal_lr(
+        self,
+        x: torch.Tensor,
+        y: torch.Tensor,
+        start_lr: float = 1e-7,
+        end_lr: float = 1.0,
+        beta: float = 0.98,
+    ) -> Tuple[List[float], List[float]]:
+        """
+        Estimate relationship between learning rates vs. losses.
+        Plot the results. The optimal learning rate is the one
+        that is in the middle of the sharpest downward slope.
+        The model parameters and optimizer state will be reset.
+
+        Parameters
+        ----------
+        x : torch.Tensor
+            Input data.
+        y : torch.Tensor
+            Target data.
+        start_lr : float, optional
+            Starting learning rate, by default 1e-7.
+        end_lr : float, optional
+            Ending learning rate, by default 1.0.
+        beta : float, optional
+            Smoothing parameter, by default 0.98.
+
+        Returns
+        -------
+        Tuple[List[float], List[float]]
+            List of learning rates and losses.
+        """
+        self.reset_model()
+        x, y = x.to(self.device), y.to(self.device)
+        dataloader = self.build_dataloader(x, y)
+        lrs, losses = self.get_lrs_vs_losses(
+            dataloader, start_lr=start_lr, end_lr=end_lr, beta=beta
+        )
+        lr_steep, lr_min = self.get_steepest_and_min_loss_lrs(lrs, losses)
+        self.plot_lrs_vs_losses(lrs, losses, lr_steep, lr_min)
+        self.reset_model()
+        return lrs, losses
+
+    def get_lrs_vs_losses(
+        self,
+        dataloader: DataLoader,
+        start_lr: float,
+        end_lr: float,
+        beta: float,
+    ) -> Tuple[List[float], List[float]]:
+        n_iterations = len(dataloader) - 1
+        mult = (end_lr / start_lr) ** (1 / n_iterations)
+        lr = start_lr
+        self.optimizer.param_groups[0]["lr"] = lr
+        avg_loss = 0
+        best_loss = 0
+        batch_num = 0
+        losses = []
+        lrs = []
+
+        for data, target in dataloader:
+            batch_num += 1
+            self.optimizer.zero_grad()
+            output = self.model(data)
+            loss = self.loss_fn(output, target)
+            # Compute the smoothed loss
+            avg_loss = beta * avg_loss + (1 - beta) * loss.item()
+            smoothed_loss = avg_loss / (1 - beta**batch_num)
+            if batch_num > 1 and smoothed_loss > 4 * best_loss:
+                break
+            if smoothed_loss < best_loss or batch_num == 1:
+                best_loss = smoothed_loss
+            # Record the learning rate and loss
+            losses.append(smoothed_loss)
+            lrs.append(lr)
+            # Backward pass
+            loss.backward()
+            self.optimizer.step()
+            # Update the learning rate
+            lr *= mult
+            self.optimizer.param_groups[0]["lr"] = lr
+            if batch_num >= n_iterations:
+                break
+
+        return lrs, losses
+
+    def get_steepest_and_min_loss_lrs(
+        self, lrs: List[float], losses: List[float]
+    ) -> Tuple[float, float]:
+        """
+        Get the learning rate with the steepest decrease (most negative gradient)
+        and the learning rate with the minimum loss.
+
+        Returns
+        -------
+        Tuple[float, float]
+            Learning rate with the steepest decrease and learning rate with the
+        """
+        lrs = np.array(lrs)
+        gradient_losses = np.gradient(losses)
+        steepest_lr = lrs[np.argmin(gradient_losses)]
+        min_loss_lr = lrs[np.argmin(losses)]
+        return steepest_lr, min_loss_lr
+
+    def plot_lrs_vs_losses(
+        self,
+        lrs: List[float],
+        losses: List[float],
+        lr_steep: float,
+        lr_min: float,
+    ) -> None:
+        plt.plot(lrs, losses)
+        plt.axvline(
+            x=lr_steep,
+            color="red",
+            ls="--",
+            label=f"Steepest ({lr_steep:.1e})",
+        )
+        plt.axvline(
+            x=lr_min,
+            color="green",
+            ls="--",
+            label=f"Min. loss ({lr_min:.1e})",
+        )
+        plt.xlabel("Learning rate")
+        plt.ylabel("Loss")
+        plt.xscale("log")
+        plt.title("Learning rate vs. loss")
         plt.legend()
         plt.show()
