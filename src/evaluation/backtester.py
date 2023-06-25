@@ -15,7 +15,7 @@ class Backtester:
         gap_proportion: float,
         valid_proportion: float,
         n_splits: int,
-        n_epochs: int = 10,
+        n_epochs: int,
     ):
         self.x = x
         self.y = y
@@ -74,21 +74,24 @@ class Backtester:
             x_train = self.x[train_start:train_end]
             y_train = self.y[train_start:train_end]
             x_valid = self.x[valid_start:valid_end]
-            y_valid = self.y[valid_start:valid_end]
+            y_true = self.y[valid_start:valid_end]
 
+            # Calculate predictions
             self.wrapper.fit(
-                x_train, y_train, x_valid, y_valid, n_epochs=self.n_epochs
+                x_train, y_train, x_valid, y_true, n_epochs=self.n_epochs
             )
             y_pred_proba = self.wrapper.predict(x_valid)
+            y_pred = torch.round(y_pred_proba)
 
             # Truncate `y_valid` to be same as `y_pred`
-            valid_dl = self.wrapper.build_dataloader(x_valid, y_valid)
-            y_valid = valid_dl.dataset.y
+            valid_dl = self.wrapper.build_dataloader(x_valid, y_true)
+            y_true = valid_dl.dataset.y
 
             # Evaluate current split
-            self.evaluation_fn(y_valid, y_pred_proba)
+            self.evaluation_fn(y_true, y_pred)
 
-            self.y_true.extend(y_valid)
+            # Store predictions
+            self.y_true.extend(y_true)
             self.y_pred_proba.extend(y_pred_proba)
 
         self.y_true = torch.Tensor(self.y_true)

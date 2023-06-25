@@ -1,55 +1,50 @@
 from typing import Dict
 
 import matplotlib.pyplot as plt
-import torch
 from sklearn.metrics import (
     ConfusionMatrixDisplay,
     accuracy_score,
-    average_precision_score,
-    f1_score,
-    precision_score,
-    recall_score,
+    balanced_accuracy_score,
+    cohen_kappa_score,
+    matthews_corrcoef,
 )
 from torch import Tensor
 
 
-def evaluate_binary(y_test: Tensor, y_pred_proba: Tensor) -> None:
+def evaluate_binary(y_true: Tensor, y_pred: Tensor) -> None:
     """
     Evaluate model performance by computing the metrics
     and plotting the confusion matrix.
 
     Parameters
     ----------
-    y_test : Tensor
+    y_true : Tensor
         True target variable.
-    y_pred_proba : Tensor
-        Prediction probabilities for the positive class (from 0.0 to 1.0).
+    y_pred : Tensor
+        Integer predictions for the positive class.
     """
-    y_test = y_test.cpu()
-    y_pred_proba = y_pred_proba.cpu()
-    metrics = calculate_metrics(y_test, y_pred_proba)
-    print(", ".join([f"{k}: {round(v, 3)}" for k, v in metrics.items()]))
-    y_pred = torch.round(y_pred_proba)
-    plot_confusion_matrix(y_test, y_pred)
+    y_true, y_pred = y_true.cpu(), y_pred.cpu()
+    metrics = calculate_metrics(y_true, y_pred)
+    print(" | ".join([f"{k}: {round(v, 3)}" for k, v in metrics.items()]))
+    plot_confusion_matrix(y_true, y_pred)
+    return metrics
 
 
-def calculate_metrics(
-    y_test: Tensor, y_pred_proba: Tensor
-) -> Dict[str, float]:
+def calculate_metrics(y_true: Tensor, y_pred: Tensor) -> Dict[str, float]:
     """Calculate all metrics."""
-    y_test, y_pred_proba = y_test.detach(), y_pred_proba.detach()
-    y_pred = torch.round(y_pred_proba)
+    y_true, y_pred = y_true.detach(), y_pred.detach()
     return {
-        "accuracy": accuracy_score(y_test, y_pred),
-        "f1": f1_score(y_test, y_pred, zero_division=0),
-        "precision": precision_score(y_test, y_pred, zero_division=0),
-        "recall": recall_score(y_test, y_pred, zero_division=0),
-        "avg_precision_score": average_precision_score(y_test, y_pred_proba),
+        "accuracy": accuracy_score(y_true, y_pred),
+        "balanced_accuracy": balanced_accuracy_score(
+            y_true, y_pred, adjusted=True
+        ),
+        "matthews_corrcoef": matthews_corrcoef(y_true, y_pred),
+        "cohen_kappa": cohen_kappa_score(y_true, y_pred),
     }
 
 
-def plot_confusion_matrix(y_test, y_pred) -> None:
-    ConfusionMatrixDisplay.from_predictions(y_test, y_pred, cmap="Blues")
+def plot_confusion_matrix(y_true: Tensor, y_pred: Tensor) -> None:
+    ConfusionMatrixDisplay.from_predictions(y_true, y_pred, cmap="Blues")
     plt.grid(False)
     plt.title("Confusion matrix")
     plt.show()
