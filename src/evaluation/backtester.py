@@ -27,7 +27,7 @@ class Backtester:
         self.n_splits = n_splits
         self.n_epochs = n_epochs
         self.y_true = None
-        self.y_pred_proba = None
+        self.y_pred = None
         self.validate()
 
     @property
@@ -53,7 +53,7 @@ class Backtester:
 
     def run(self):
         self.y_true = []
-        self.y_pred_proba = []
+        self.y_pred = []
 
         for i in range(self.n_splits):
             self.wrapper.reset_model()
@@ -92,13 +92,13 @@ class Backtester:
 
             # Store predictions
             self.y_true.extend(y_true)
-            self.y_pred_proba.extend(y_pred_proba)
+            self.y_pred.extend(y_pred)
 
         self.y_true = torch.Tensor(self.y_true)
-        self.y_pred_proba = torch.Tensor(self.y_pred_proba)
+        self.y_pred = torch.Tensor(self.y_pred)
         # Evaluate all splits
         print("FINAL RESULTS")
-        self.evaluation_fn(self.y_true, self.y_pred_proba)
+        self.evaluation_fn(self.y_true, self.y_pred)
 
     def validate(self):
         # Validate proportions
