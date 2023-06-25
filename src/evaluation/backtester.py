@@ -15,7 +15,7 @@ class Backtester:
         gap_proportion: float,
         valid_proportion: float,
         n_splits: int,
-        n_epochs: int = 10,
+        n_epochs: int,
     ):
         self.x = x
         self.y = y
