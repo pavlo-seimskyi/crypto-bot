@@ -12,7 +12,7 @@ class TransformerBinaryClassifier(torch.nn.Module):
         n_out: int = 1,
         dropout: float = 0.1,
     ):
-        super(TransformerBinaryClassifier, self).__init__()
+        super().__init__()
         self.n_embedding_dims = n_embedding_dims
         self.embedding = torch.nn.Linear(n_features, n_embedding_dims)
         self.pos_encoder = PositionalEncoding(n_embedding_dims, dropout)
@@ -47,7 +47,7 @@ class PositionalEncoding(torch.nn.Module):
     def __init__(
         self, n_embedding_dims: int, dropout: float = 0.1, max_len: int = 5000
     ):
-        super(PositionalEncoding, self).__init__()
+        super().__init__()
         self.dropout = torch.nn.Dropout(p=dropout)
         pe = torch.zeros(max_len, n_embedding_dims)
         position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)

@@ -28,7 +28,7 @@ class SlidingWindowDataset(torch.utils.data.Dataset):
             By default, the target is mapped to the last window element.
             Can be anything between `0` and `seq_len - 1`.
         """
-        super(SlidingWindowDataset, self).__init__()
+        super().__init__()
         self.seq_len = seq_len
         self.x = self.apply_sliding_window_to_x(x)
         self.y_available = y is not None
