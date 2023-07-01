@@ -5,7 +5,7 @@ class LSTMBinaryClassifier(torch.nn.Module):
     def __init__(
         self, n_features: int, n_hidden: int, n_layers: int, n_out: int = 1
     ):
-        super(LSTMBinaryClassifier, self).__init__()
+        super().__init__()
         self.n_hidden = n_hidden
         self.n_layers = n_layers
         # The LSTM layer
